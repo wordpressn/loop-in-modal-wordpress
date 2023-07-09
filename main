@@ -1,0 +1,75 @@
+<?php //<~ don't add me in
+
+
+add_shortcode( 'modal_post_loop', 'modal_post_loop' );
+/**
+ * Post Query Showing Loop Content in Modals
+ * @since 1.0.0
+ */
+function modal_post_loop() {
+ob_start();
+
+$args = array(
+	'posts_per_page' => -1,
+	'post_type'      => 'post',
+	'post_status'    => 'publish',
+);
+
+$the_query = new WP_Query( $args );
+
+if ( $the_query->have_posts() ) : 
+
+$i = 1; // Set the increment variable  
+
+while ( $the_query->have_posts() ) : $the_query->the_post(); 
+
+?>
+
+<!-- Loop content -->
+<div><?php the_post_thumbnail( 'thumbnail' ); ?></div>
+
+<h2><?php the_title(); ?></h2>
+     
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal-<?php echo $i;?>">
+  Read More
+</button>
+
+
+<!-- Modal content-->
+<div class="modal fade" id="Modal-<?php echo $i;?>" tabindex="-1" role="dialog" aria-labelledby="ModalLabel-<?php echo $i;?>" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalLabel-<?php echo $i;?>"><?php the_title(); ?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	  
+	  <div><?php the_post_thumbnail( 'large' ); ?></div>
+	  <?php the_content(); ?>
+  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php $i++; // Increment the increment variable by 1
+
+endwhile;
+
+wp_reset_postdata(); 
+
+else :
+	_e( 'Sorry, no posts published today, please try tomorrow' );
+
+endif;
+
+return ob_get_clean();
+}
